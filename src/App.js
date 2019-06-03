@@ -237,12 +237,12 @@ class App extends React.Component {
                   <Row>
                   <ButtonGroup vertical>
                       <div>
-                          <p>Genres<span style={{ color:"white" }} id="UncontrolledTooltipExample">Genres</span>.</p>
+                          <p><span style={{ color:"white" }} id="UncontrolledTooltipExample">Genres</span>.</p>
                         <UncontrolledTooltip placement="right" target="UncontrolledTooltipExample">
                           Hello world!
                         </UncontrolledTooltip>
                       </div>
-                      <Button outline color="warning" onClick={this.showAllMovies}>All Movies {this.state.allMovies.length === 0 ? null : <Badge color="warning">{this.state.allMovies.length}</Badge>}</Button>
+                      <Button outline color="warning" onClick={this.showAllMovies}>All Movies {this.state.movies.length === 0 ? null : <Badge color="warning">{this.state.movies.length}</Badge>}</Button>
                       <Button outline color="warning" onClick={this.selectGenresAction}>Action {this.state.actionMovies.length === 0 ? null :<Badge color="warning">{this.state.actionMovies.length}</Badge>}</Button>
                       <Button outline color="warning" onClick={this.selectGenresComedy}>Comedy {this.state.comedyMovies.length === 0 ? null :<Badge color="warning">{this.state.comedyMovies.length}</Badge>}</Button>
                       <Button outline color="warning" onClick={this.selectGenresAnimation}>Animation {this.state.animationMovies.length === 0 ? null :<Badge color="warning">{this.state.animationMovies.length}</Badge>}</Button>
@@ -251,7 +251,7 @@ class App extends React.Component {
                     </ButtonGroup>   
                   </Row>
                   <Row>
-                    <Button href="#" onClick={this.sortMostRated}>Most Vote</Button>
+                    <Button href="#" onClick={this.sortMostRated} color="warning" className="mt-5">Most Vote</Button>
                   </Row>
               </Col>
 
