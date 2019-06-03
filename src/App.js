@@ -43,6 +43,7 @@ class App extends React.Component {
   }
   componentDidMount(){
     this.getMoviesData()
+    this.getGenresId()
   }
 
   updateQuery(evt) {
@@ -87,56 +88,7 @@ class App extends React.Component {
     return this.getMoviesData()
   }
 
-  selectGenresAction = () => {
-    const actionMovies = this.state.allMovies.filter(movie => {
-       return movie.genre_ids.some(idx => idx === 28) === true
-    })
-    this.setState({
-      movies: actionMovies,
-      actionMovies : actionMovies
-    })
-    return this.renderMovies()
-  }
-  selectGenresComedy = () => {
-    const comedyMovies = this.state.allMovies.filter(movie => {
-       return movie.genre_ids.some(idx => idx === 35) === true
-    })
-    this.setState({
-      movies: comedyMovies,
-      comedyMovies: comedyMovies
-    })
-    return this.renderMovies()
-  }
-  selectGenresAnimation = () => {
-    const animationMovies = this.state.allMovies.filter(movie => {
-       return movie.genre_ids.some(idx => idx === 16) === true
-    })
-    this.setState({
-      movies: animationMovies,
-      animationMovies: animationMovies
-    })
-    return this.renderMovies()
-  }
-  selectGenresFantasy = () => {
-    const fantasyMovies = this.state.allMovies.filter(movie => {
-       return movie.genre_ids.some(idx => idx === 14) === true
-    })
-    this.setState({
-      movies: fantasyMovies,
-      fantasyMovies: fantasyMovies
-    })
-    return this.renderMovies()
-  }
-  selectGenresHorror = () => {
-    const horrorMovies = this.state.allMovies.filter(movie => {
-       return movie.genre_ids.some(idx => idx === 27) === true
-    })
-    this.setState({
-      movies: horrorMovies,
-      horrorMovies: horrorMovies
-    })
-    return this.renderMovies()
-  }
+
   showAllMovies = () => {
     const { allMovies } = this.state
       this.setState({
@@ -152,13 +104,14 @@ class App extends React.Component {
     this.setState({
       movies: newMovies
     })
-    return this.renderMovies()
+    
   }
   loadMoreBtn = () => {
-    const { pageNumber } = this.state
+    const { pageNumber} = this.state
     this.setState({
       pageNumber: pageNumber + 1
     })
+    console.log(this.state.pageNumber)
     return this.getMoviesData()
   }
 
@@ -182,7 +135,7 @@ class App extends React.Component {
     return poster_path === null ? `https://previews.123rf.com/images/mousemd/mousemd1710/mousemd171000009/87405336-404-not-found-concept-glitch-style-vector.jpg`:`https://image.tmdb.org/t/p/w500${poster_path}` 
   }
 
-
+  
   
   renderMovies () {
     return this.state.movies.map(({title, poster_path, release_date, backdrop_path, vote_average}) => {
@@ -199,6 +152,39 @@ class App extends React.Component {
       </Card>
     )})
   }
+
+  getGenresId = async() => {
+    const url = `https://api.themoviedb.org/3/genre/movie/list?api_key=eb80f0da925cba79d538d53b7ca005cc&language=en-US`
+    let response = await fetch(url);
+    let data = await response.json();
+    let genresList = data.genres
+    console.log('ssss', data)
+    this.setState({
+      genres: genresList
+    })
+    console.log(this.state.genres)
+  }
+
+  renderGenresList () {
+    console.log(this.state.genres)
+      return this.state.genres.map(({name, id}) => {
+        return (
+            <Button outline color="warning" onClick={() => this.selectedGenres(id)}>{name}{this.state.movies.length}</Button>
+        )})
+  }
+
+  selectedGenres = (id) => {
+    const movieOfGenres = this.state.allMovies.filter(movie => {
+       return movie.genre_ids.some(x => x === id) === true
+    })
+    console.log("genres da sort", movieOfGenres)
+
+    this.setState({
+      movies: movieOfGenres
+    })
+    return this.renderMovies()
+  }
+
 
   render(){
     return(
@@ -234,27 +220,15 @@ class App extends React.Component {
         <div className="m-0 w-100">
             <Row className="w-100">
               <Col md={2} className="p-5">
-                  <Row>
-                  <ButtonGroup vertical>
-                      <div>
-                          <p><span style={{ color:"white" }} id="UncontrolledTooltipExample">Genres</span>.</p>
-                        <UncontrolledTooltip placement="right" target="UncontrolledTooltipExample">
-                          Hello world!
-                        </UncontrolledTooltip>
-                      </div>
-                      <Button outline color="warning" onClick={this.showAllMovies}>All Movies {this.state.movies.length === 0 ? null : <Badge color="warning">{this.state.movies.length}</Badge>}</Button>
-                      <Button outline color="warning" onClick={this.selectGenresAction}>Action {this.state.actionMovies.length === 0 ? null :<Badge color="warning">{this.state.actionMovies.length}</Badge>}</Button>
-                      <Button outline color="warning" onClick={this.selectGenresComedy}>Comedy {this.state.comedyMovies.length === 0 ? null :<Badge color="warning">{this.state.comedyMovies.length}</Badge>}</Button>
-                      <Button outline color="warning" onClick={this.selectGenresAnimation}>Animation {this.state.animationMovies.length === 0 ? null :<Badge color="warning">{this.state.animationMovies.length}</Badge>}</Button>
-                      <Button outline color="warning" onClick={this.selectGenresFantasy}>Fantasy {this.state.fantasyMovies.length === 0 ? null :<Badge color="warning">{this.state.fantasyMovies.length}</Badge>}</Button>
-                      <Button outline color="warning" onClick={this.selectGenresHorror}>Horror {this.state.horrorMovies.length === 0 ? null :<Badge color="warning">{this.state.horrorMovies.length}</Badge>}</Button>
-                    </ButtonGroup>   
-                  </Row>
-                  <Row>
+                   <Row>
                     <Button href="#" onClick={this.sortMostRated} color="warning" className="mt-5">Most Vote</Button>
                   </Row>
+                  <Row>
+                  <ButtonGroup vertical>
+                      {this.renderGenresList()}
+                    </ButtonGroup>   
+                  </Row>
               </Col>
-
               <Col className="content">
                 <Container style={{width: "100%" ,display: "flex", flexWrap: "wrap"}}>
                          {this.renderMovies()}
@@ -263,7 +237,7 @@ class App extends React.Component {
           </Row>
         </div>
         <div className="h-50 pb-4 d-flex justify-content-center">
-        <Button color="warning" size="lg" onClick={this.loadMoreBtn}>Load More</Button>
+           <Button color="warning" size="lg" onClick={this.loadMoreBtn}>Load More</Button>
         </div>
       </div>
     )
