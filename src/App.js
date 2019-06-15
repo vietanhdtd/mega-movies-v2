@@ -1,5 +1,6 @@
 import React from 'react';
 import './App.css';
+import RenderCarousel from './component/carousel'
 import moment from 'moment';
 import {
   Button, Col,
@@ -13,7 +14,7 @@ import {
   NavItem,
   NavLink,
   Card, CardImg, Badge,
-  Row, ButtonGroup, UncontrolledTooltip
+  Row, ButtonGroup
 } from "reactstrap";
 import { notEqual } from 'assert';
 import Modal from 'react-modal';
@@ -35,11 +36,6 @@ class App extends React.Component {
       movies: [],
       yearRange: { min: 1990, max: 2019 },
       genre_ids: [],
-      actionMovies: [],
-      comedyMovies: [],
-      animationMovies: [],
-      horrorMovies: [],
-      fantasyMovies: [],
       popoverOpen: false,
       isOpen: false,
       videoKey: "",
@@ -52,7 +48,6 @@ class App extends React.Component {
   }
 
   updateQuery(evt) {
-
     this.setState({
       query: evt.target.value,
       updateAPI: "/search/movie",
@@ -72,6 +67,7 @@ class App extends React.Component {
     this.getMoviesData()
     return this.renderMovies()
   }
+
   getTopRatedMovies = () => {
     this.setState({
       updateAPI: "/movie/top_rated",
@@ -100,6 +96,7 @@ class App extends React.Component {
     })
     return this.renderMovies()
   }
+
   sortMostRated = () => {
     const newMovies = this.state.movies.sort((a, b) => {
       return b.vote_average - a.vote_average
@@ -110,8 +107,9 @@ class App extends React.Component {
     })
     
   }
+
   loadMoreBtn = () => {
-    const { pageNumber} = this.state
+    const { pageNumber } = this.state
     this.setState({
       pageNumber: pageNumber + 1
     })
@@ -126,6 +124,7 @@ class App extends React.Component {
     let response = await fetch(url);
     let data = await response.json();
     let newState = data.results
+    console.log(data)
     this.setState({
       movies: this.state.movies.concat(newState),
       allMovies: this.state.allMovies.concat(newState)
@@ -137,7 +136,7 @@ class App extends React.Component {
 
 
 
-  getPosterImgUrl(poster_path) {
+  getImage(poster_path) {
     return poster_path === null ? `https://previews.123rf.com/images/mousemd/mousemd1710/mousemd171000009/87405336-404-not-found-concept-glitch-style-vector.jpg` : `https://image.tmdb.org/t/p/w500${poster_path}`
   }
 
@@ -164,17 +163,17 @@ class App extends React.Component {
 
 
   renderMovies() {
-    console.log("thisstate", this.state)
-    return this.state.movies.map(({ title, poster_path, release_date, backdrop_path, vote_average, id }) => {
+    return this.state.movies.map(({ title, poster_path, release_date, backdrop_path, vote_average, id }, idx) => {
       return (
-        <Card style={{ width: '15rem', height: '34rem', margin: 15, backgroundColor: "black", display: "flex", paddingBottom: 40 }}>
-          <CardImg src={this.getPosterImgUrl(poster_path, backdrop_path)} alt="Card image cap" />
+        <Card style={{ width: '15rem', height: '34rem', margin: 15, backgroundColor: "black", display: "flex", paddingBottom: 40 }} key={idx}>
+          <CardImg src={this.getImage(poster_path, backdrop_path)} alt="Card image cap" />
           <div className="text-white pt-3"><h5>{title}</h5></div>
           <div className="h-100 d-flex">
             <Row className="align-self-end w-100">
               <Col md={10}><p className="text-white-50">{moment(release_date).format('LL')}</p></Col>
               <Col md={2}><Badge color="warning">{vote_average}</Badge></Col>
             </Row>
+            <p>{id}</p>
           </div>
           <Row>
             <button onClick={() => this.setState({ isOpen: true, movieId: id }, () => this.renderModal(id))}>Watch Trailer</button>
@@ -189,18 +188,15 @@ class App extends React.Component {
     let response = await fetch(url);
     let data = await response.json();
     let genresList = data.genres
-    console.log('ssss', data)
     this.setState({
       genres: genresList
     })
-    console.log(this.state.genres)
   }
 
   renderGenresList () {
-    console.log(this.state.genres)
-      return this.state.genres.map(({name, id}) => {
+      return this.state.genres.map(({name, id},idx) => {
         return (
-            <Button outline color="warning" onClick={() => this.selectedGenres(id)}>{name}{this.state.movies.length}</Button>
+            <Button outline color="warning" onClick={() => this.selectedGenres(id)} key={idx}>{name}{this.state.movies.length}</Button>
         )})
   }
 
@@ -253,7 +249,7 @@ class App extends React.Component {
                   <NavbarBrand className ="align-center" href="/"> <img src="https://img.icons8.com/cotton/64/000000/the-oscars.png"width="40" height="40"/>Movie Time</NavbarBrand> 
                         <Nav navbar>
                         <NavItem>
-                              <NavLink href="#" onClick={this.getNowPlayingMovies} className="text-warning">Now Playing</NavLink>
+                              <NavLink href="#" onClick={() => this.getNowPlayingMovies} className="text-warning">Now Playing</NavLink>
                             </NavItem>
                             <NavItem>
                               <NavLink href="#" onClick={this.getTopRatedMovies} className="text-warning">Top Rated</NavLink>
@@ -279,6 +275,9 @@ class App extends React.Component {
         </Navbar>
         {/*The fetched list of movies*/}
         <div className="m-0 w-100">
+          <div className="d-flex justify-content-center">
+            <RenderCarousel getImage={this.getImage} allMovies={this.state.allMovies} />
+          </div>
             <Row className="w-100">
               <Col md={2} className="p-5">
                    <Row>
