@@ -1,120 +1,134 @@
 import React, { Component } from 'react';
-import {
-  Carousel,
-  CarouselItem,
-  CarouselControl,
-  CarouselIndicators,
-  CarouselCaption
-} from 'reactstrap';
+import Carousel from 'react-bootstrap/Carousel'
+import moment from 'moment'
+import { BrowserRouter as Router, Route, Link } from "react-router-dom"
 
-
-const uniqueRandomArray = require('unique-random-array');
-
-const random = uniqueRandomArray(items);
-
-console.log(random());
-
-
-
-
-
-class RenderCarousel extends Component {
-  constructor(props) {
-    super(props);
-    this.state = { 
-      activeIndex: 0,
-      randomMovies: "",
-      items: [
-        {
-          src: this.randomMovies == undefined ? " " : this.randomMovies.backdrop_path ,
-          altText: 'Slide 1',
-          caption: 'Slide 1'
-        },
-        {
-          src: 'https://image.tmdb.org/t/p/w500/w2PMyoyLU22YvrGK3smVM9fW1jj.jpg',
-          altText: 'Slide 2',
-          caption: 'Slide 2'
-        },
-        {
-          src: 'data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22800%22%20height%3D%22400%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20800%20400%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_15ba800aa21%20text%20%7B%20fill%3A%23333%3Bfont-weight%3Anormal%3Bfont-family%3AHelvetica%2C%20monospace%3Bfont-size%3A40pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_15ba800aa21%22%3E%3Crect%20width%3D%22800%22%20height%3D%22400%22%20fill%3D%22%23555%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%22277%22%20y%3D%22218.3%22%3EThird%20slide%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E',
-          altText: 'Slide 3',
-          caption: 'Slide 3'
-        },
-        {
-          src: 'data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22800%22%20height%3D%22400%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20800%20400%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_15ba800aa21%20text%20%7B%20fill%3A%23333%3Bfont-weight%3Anormal%3Bfont-family%3AHelvetica%2C%20monospace%3Bfont-size%3A40pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_15ba800aa21%22%3E%3Crect%20width%3D%22800%22%20height%3D%22400%22%20fill%3D%22%23555%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%22277%22%20y%3D%22218.3%22%3EThird%20slide%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E',
-          altText: 'Slide 4',
-          caption: 'Slide 4'
-        }
-      ]
+class ControlledCarousel extends React.Component {
+  constructor(props, context) {
+    super(props, context);
+    this.handleSelect = this.handleSelect.bind(this);
+    this.state = {
+      index: 0,
+      direction: null,
+      randomMovie: {backdrop_path: "/bOGkgRGdhrBYJSLpXaxhXVstddV.jpg", title: "Avenger: End Game", id: 299536},
     };
-    this.next = this.next.bind(this);
-    this.previous = this.previous.bind(this);
-    this.goToIndex = this.goToIndex.bind(this);
-    this.onExiting = this.onExiting.bind(this);
-    this.onExited = this.onExited.bind(this);
-    
-  }
-  
-  randomMovie() {
-    let movie = uniqueRandomArray(this.props.allMovies)
-    return movie()
   }
 
-  onExiting() {
-    this.animating = true;
+
+  randomMovieImage = () => {
+    if(this.props.allMovies === undefined) return ""
+    else {
+    let movie = this.props.allMovies[Math.floor(Math.random() * this.props.allMovies.length)]
+    console.log(movie)
+    this.setState({ randomMovie: movie })
+  }}
+
+
+  handleSelect(selectedIndex, e) {
+    this.randomMovieImage()
+    this.setState({
+      index: selectedIndex,
+      direction: e.direction,
+    });
   }
 
-  onExited() {
-    this.animating = false;
+
+  movieDetails(id) {
+    this.props.movieDetails(id)
   }
 
-  next() {
-    if (this.animating) return;
-    const nextIndex = this.state.activeIndex === this.state.items.length - 1 ? 0 : this.state.activeIndex + 1;
-    this.setState({ activeIndex: nextIndex });
-  }
-
-  previous() {
-    if (this.animating) return;
-    const nextIndex = this.state.activeIndex === 0 ? this.state.items.length - 1 : this.state.activeIndex - 1;
-    this.setState({ activeIndex: nextIndex });
-  }
-
-  goToIndex(newIndex) {
-    if (this.animating) return;
-    this.setState({ activeIndex: newIndex });
-  }
 
   render() {
-    const { activeIndex } = this.state;
-    console.log(this.randomMovie)
-    const slides = this.state.items.map((item) => {
-      return (
-        <CarouselItem
-          onExiting={this.onExiting}
-          onExited={this.onExited}
-          key={item.src}
-        >
-          <img src={item.src} alt={item.altText} />
-          <CarouselCaption captionHeader={item.caption} />
-        </CarouselItem>
-      );
-    });
-
+    const { index, direction, randomMovie } = this.state;
+    console.log(this.state.randomMovie)
     return (
-      <Carousel className="d-flex w-75 justify-content-center"
-        activeIndex={activeIndex}
-        next={this.next}
-        previous={this.previous}
+      <Carousel className="m-3 w-100"
+        activeIndex={index}
+        direction={direction}
+        onSelect={this.handleSelect}
+        indicators="false"
+        slide="false"
       >
-        <CarouselIndicators items={this.state.items} activeIndex={activeIndex} onClickHandler={this.goToIndex} />
-        {slides}
-        <CarouselControl direction="prev" directionText="Previous" onClickHandler={this.previous} />
-        <CarouselControl direction="next" directionText="Next" onClickHandler={this.next} />
+        <Carousel.Item>
+          <div className="d-flex justify-content-center">
+          <Link to={`/View/Movies/${randomMovie.id}`} onClick={() => this.movieDetails(randomMovie.id)}>
+            <img
+            style={{width: 1000, height:"100%"}}
+            className="d-block"
+            src={"https://image.tmdb.org/t/p/original" + randomMovie.backdrop_path}
+            alt="First slide"
+          />
+          </Link>
+          </div>
+          <Carousel.Caption>
+            <h4>
+              {randomMovie.title} ({moment(randomMovie.release_date).format('YYYY')})
+            </h4>
+          </Carousel.Caption>
+        </Carousel.Item>
+        <Carousel.Item>
+        <div className="d-flex justify-content-center">
+        <Link to={`/View/Movies/${randomMovie.id}`} onClick={() => this.movieDetails(randomMovie.id)}>
+        <img
+            style={{width: 1000, height:"100%"}}
+            className="d-block"
+            src={"https://image.tmdb.org/t/p/original" + randomMovie.backdrop_path}
+            alt="Third slide"
+          />
+        </Link>
+        </div>
+          <Carousel.Caption>
+            <h4>{randomMovie.title} ({moment(randomMovie.release_date).format('YYYY')})</h4>
+          </Carousel.Caption>
+        </Carousel.Item>
+        <Carousel.Item>
+        <div className="d-flex justify-content-center">
+        <Link to={`/View/Movies/${randomMovie.id}`} onClick={() => this.movieDetails(randomMovie.id)}>
+          <img
+            style={{width: 1000, height:"100%"}}
+            className="d-block"
+            src={"https://image.tmdb.org/t/p/original" + randomMovie.backdrop_path}
+            alt="Third slide"
+          />
+          </Link>
+        </div>
+          <Carousel.Caption>
+            <h4>{randomMovie.title} ({moment(randomMovie.release_date).format('YYYY')})</h4>
+          </Carousel.Caption>
+        </Carousel.Item>
+        <Carousel.Item>
+        <div className="d-flex justify-content-center"> 
+        <Link to={`/View/Movies/${randomMovie.id}`} onClick={() => this.movieDetails(randomMovie.id)}>
+          <img
+            style={{width: 1000, height:"100%"}}
+            className="d-block"
+            src={"https://image.tmdb.org/t/p/original" + randomMovie.backdrop_path}
+            alt="Third slide"
+          />
+          </Link>
+        </div>
+          <Carousel.Caption>
+            <h4>{randomMovie.title} ({moment(randomMovie.release_date).format('YYYY')})</h4>
+          </Carousel.Caption>
+        </Carousel.Item>
+        <Carousel.Item>
+        <div className="d-flex justify-content-center"> 
+        <Link to={`/View/Movies/${randomMovie.id}`} onClick={() => this.movieDetails(randomMovie.id)}>
+          <img
+            style={{width: 1000, height:"100%"}}
+            className="d-block"
+            src={"https://image.tmdb.org/t/p/original" + randomMovie.backdrop_path}
+            alt="Third slide"
+          />
+          </Link>
+        </div>
+          <Carousel.Caption>
+            <h4>{randomMovie.title} ({moment(randomMovie.release_date).format('YYYY')})</h4>
+          </Carousel.Caption>
+        </Carousel.Item>
       </Carousel>
     );
   }
 }
 
-
-export default RenderCarousel;
+export default ControlledCarousel;
