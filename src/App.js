@@ -4,6 +4,8 @@ import ControlledCarousel from './component/carousel'
 import MovieDetails from './component/movieDetails';
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 import moment from 'moment';
+import 'simplebar'; // or "import SimpleBar from 'simplebar';" if you want to use it manually.
+import 'simplebar/dist/simplebar.css';
 import {
   Button, Col,
   Container,
@@ -209,7 +211,7 @@ class App extends React.Component {
   renderNavBar = () => {
     return (
       <Navbar style={{ backgroundColor: 'rgba(52, 52, 52, 0.7)' }} dark expand="md" sticky="top">
-        <NavbarBrand className="align-center" href="/"> <img src="https://img.icons8.com/cotton/64/000000/the-oscars.png" width="40" height="40" />Movies Time</NavbarBrand>
+        <NavbarBrand className="align-center" href="/"> <img src="https://img.icons8.com/cotton/64/000000/the-oscars.png" width="40" height="40" alt="logo" />Movies Time</NavbarBrand>
         <NavbarToggler onClick={this.toggleNavbar} />
         <Collapse isOpen={this.state.isOpen} navbar>
         <Nav navbar>
@@ -256,8 +258,7 @@ class App extends React.Component {
 
   render() {
     return (
-      
-        <div style={{ backgroundColor: "black" }}>
+        <div style={{ backgroundColor: "black" }} data-simplebar>
           {this.renderNavBar()}
           <div className="m-0 w-100">
             <div className="d-flex justify-content-center">

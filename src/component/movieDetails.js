@@ -21,29 +21,28 @@ class MovieDetails extends React.Component {
         let data = await response.json();
         console.log("movies data",data)
         this.setState({
-          title: data.title,
-          overview: data.overview,  
-          videoKey: data.videos.results[Math.floor(Math.random() * data.videos.results.length)].key,
+            title: data.title,
+            overview: data.overview,  
+            videoKey: data.videos.results[Math.floor(Math.random() * data.videos.results.length)].key,
+            backdrop: data.backdrop_path
         })
         
     }
-    
-    
     render() {
-        console.log(this.state.title)
+        console.log(this.state.backdrop)
         const {title, overview} = this.state
         return (
-            <div style={{backgroundColor:"black"}} className="h-100">
-                <div>
-                    
-                     <h2>{title}</h2>
+            <div style={{backgroundImage:`url(https://image.tmdb.org/t/p/original${this.state.backdrop})`,
+                        backgroundSize:"cover"
+            }} className="h-100">
+                <div className="container" style={{backgroundColor:"black"}}>
+                    <h2>{title}</h2>
+                    <p>{overview}</p>
+                    <YouTube video={this.state.videoKey}
+                            height="35%"
+                            width="50%"
+                            />
                 </div>
-                     <p>{overview}</p>
-                        
-                <YouTube video={this.state.videoKey}
-                    height="35%"
-                    width="50%"
-                />
             </div>
         )
     }
